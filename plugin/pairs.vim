@@ -401,7 +401,7 @@ func! AutoPairsSpace()
       if close =~ '\v^[''"`]$'
         return "\<SPACE>"
       else
-        return "\<SPACE>\<SPACE>".utils#GoLeft
+        return "\<SPACE>\<SPACE>\<C-G>U\<LEFT>"
       end
     end
   endfor
