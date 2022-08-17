@@ -102,27 +102,6 @@ if !exists('g:AutoPairsSmartQuotes')
   let g:AutoPairsSmartQuotes = 1
 endif
 
-func! s:getline()
-  let line = getline('.')
-  let pos = col('.') - 1
-  let before = strpart(line, 0, pos)
-  let after = strpart(line, pos)
-  let afterline = after
-  if g:AutoPairsMultilineClose
-    let n = line('$')
-    let i = line('.')+1
-    while i <= n
-      let line = getline(i)
-      let after = after.' '.line
-      if !(line =~ '\v^\s*$')
-        break
-      end
-      let i = i+1
-    endwhile
-  end
-  return [before, after, afterline]
-endf
-
 " split text to two part
 " returns [orig, text_before_open, open]
 func! s:matchend(text, open)
@@ -168,7 +147,7 @@ func! AutoPairsInsert(key)
 
   let b:autopairs_saved_pair = [a:key, getpos('.')]
 
-  let [before, after, afterline] = s:getline()
+  let [before, after, afterline] = utils#GetLineContext()
 
   " Ignore auto close if prev character is \
   if before[-1:-1] == '\'
@@ -271,7 +250,7 @@ func! AutoPairsDelete()
     return "\<BS>"
   end
 
-  let [before, after, ig] = s:getline()
+  let [before, after, ig] = utils#GetLineContext()
   for [open, close, opt] in b:AutoPairsList
     let b = matchstr(before, '\V'.open.'\v\s?$')
     let a = matchstr(after, '^\v\s*\V'.close)
@@ -303,7 +282,7 @@ endf
 func! AutoPairsFastWrap()
   let c = @"
   normal! x
-  let [before, after, ig] = s:getline()
+  let [before, after, ig] = utils#GetLineContext()
   if after[0] =~ '\v[\{\[\(\<]'
     normal! %
     normal! p
@@ -353,7 +332,7 @@ func! AutoPairsReturn()
   end
   let b:autopairs_return_pos = 0
   let before = getline(line('.')-1)
-  let [ig, ig, afterline] = s:getline()
+  let [ig, ig, afterline] = utils#GetLineContext()
   let cmd = ''
   for [open, close, opt] in b:AutoPairsList
     if close == ''
@@ -391,7 +370,7 @@ func! AutoPairsSpace()
     return "\<SPACE>"
   end
 
-  let [before, after, ig] = s:getline()
+  let [before, after, ig] = utils#GetLineContext()
 
   for [open, close, opt] in b:AutoPairsList
     if close == ''
