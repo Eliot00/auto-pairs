@@ -112,15 +112,6 @@ func! s:matchend(text, open)
     return [a:text, strpart(a:text, 0, len(a:text)-len(m)), m]
 endf
 
-" returns [orig, close, text_after_close]
-func! s:matchbegin(text, close)
-    let m = matchstr(a:text, '^\V'.a:close)
-    if m == ""
-      return []
-    end
-    return [a:text, m, strpart(a:text, len(m), len(a:text)-len(m))]
-endf
-
 " add or delete pairs base on g:AutoPairs
 " AutoPairsDefine(addPairs:dict[, removeOpenPairList:list])
 "
