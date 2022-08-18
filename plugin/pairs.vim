@@ -326,45 +326,6 @@ func! AutoPairsBackInsert()
   return pair
 endf
 
-func! AutoPairsReturn()
-  if b:autopairs_enabled == 0
-    return ''
-  end
-  let b:autopairs_return_pos = 0
-  let before = getline(line('.')-1)
-  let [ig, ig, afterline] = utils#GetLineContext()
-  let cmd = ''
-  for [open, close, opt] in b:AutoPairsList
-    if close == ''
-      continue
-    end
-
-    if before =~ '\V'.open.'\v\s*$' && afterline =~ '^\s*\V'.close
-      let b:autopairs_return_pos = line('.')
-      if g:AutoPairsCenterLine && winline() * 3 >= winheight(0) * 2
-        " Recenter before adding new line to avoid replacing line content
-        let cmd = "zz"
-      end
-
-      " If equalprg has been set, then avoid call =
-      " https://github.com/jiangmiao/auto-pairs/issues/24
-      if &equalprg != ''
-        return "\<ESC>".cmd."O"
-      endif
-
-      " conflict with javascript and coffee
-      " javascript   need   indent new line
-      " coffeescript forbid indent new line
-      if &filetype == 'coffeescript' || &filetype == 'coffee'
-        return "\<ESC>".cmd."k==o"
-      else
-        return "\<ESC>".cmd."=ko"
-      endif
-    end
-  endfor
-  return ''
-endf
-
 func! AutoPairsSpace()
   if !b:autopairs_enabled
     return "\<SPACE>"
@@ -537,17 +498,5 @@ func! AutoPairsInit()
   endif
 
 endf
-
-func! s:ExpandMap(map)
-  let map = a:map
-  let map = substitute(map, '\(<Plug>\w\+\)', '\=maparg(submatch(1), "i")', 'g')
-  let map = substitute(map, '\(<Plug>([^)]*)\)', '\=maparg(submatch(1), "i")', 'g')
-  return map
-endf
-
-" Always silent the command
-inoremap <silent> <SID>AutoPairsReturn <C-R>=AutoPairsReturn()<CR>
-imap <script> <Plug>AutoPairsReturn <SID>AutoPairsReturn
-
 
 au BufEnter * :call AutoPairsInit()
