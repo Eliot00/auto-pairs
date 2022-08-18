@@ -42,6 +42,14 @@ export def GetLineContext(): list<string>
   return [before_str, after_str, after_line]
 enddef
 
+def MatchBegin(text: string, close: string): list<string>
+  const m = matchstr(text, '^\V' .. close)
+  if m == ""
+    return []
+  endif
+  return [text, m, strpart(text, len(m), len(text) - len(m))]
+enddef
+
 def UnicodeLen(pair: string): number
   return len(split(pair, '\zs'))
 enddef

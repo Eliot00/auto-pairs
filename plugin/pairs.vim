@@ -180,7 +180,7 @@ func! AutoPairsInsert(key)
             " any text before openPair should not be deleted
             continue
           end
-          let cs = s:matchbegin(afterline, c)
+          let cs = utils#MatchBegin(afterline, c)
           if len(os) && len(cs)
             let found = 1
             let before = os[1]
