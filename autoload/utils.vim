@@ -42,7 +42,7 @@ export def GetLineContext(): list<string>
   return [before_str, after_str, after_line]
 enddef
 
-def MatchBegin(text: string, close: string): list<string>
+export def MatchBegin(text: string, close: string): list<string>
   const m = matchstr(text, '^\V' .. close)
   if m == ""
     return []
