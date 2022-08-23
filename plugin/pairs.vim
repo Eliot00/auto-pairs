@@ -7,7 +7,7 @@
 " Repository: https://github.com/jiangmiao/auto-pairs
 " License: MIT
 
-import autoload 'utils.vim'
+import autoload 'pairs/utils.vim'
 
 if exists('g:AutoPairsLoaded') || &cp
   finish
@@ -138,7 +138,7 @@ func! AutoPairsInsert(key)
 
   let b:autopairs_saved_pair = [a:key, getpos('.')]
 
-  let [before, after, afterline] = utils#GetLineContext()
+  let [before, after, afterline] = pairs#utils#GetLineContext()
 
   " Ignore auto close if prev character is \
   if before[-1:-1] == '\'
@@ -171,13 +171,13 @@ func! AutoPairsInsert(key)
             " any text before openPair should not be deleted
             continue
           end
-          let cs = utils#MatchBegin(afterline, c)
+          let cs = pairs#utils#MatchBegin(afterline, c)
           if len(os) && len(cs)
             let found = 1
             let before = os[1]
             let afterline = cs[2]
-            let bs = bs.utils#Backspace(os[2])
-            let del = del.utils#Delete(cs[1])
+            let bs = bs.pairs#utils#Backspace(os[2])
+            let del = del.pairs#utils#Delete(cs[1])
             break
           end
         endfor
@@ -186,11 +186,11 @@ func! AutoPairsInsert(key)
           let ms = s:matchend(before, '\v.')
           if len(ms)
             let before = ms[1]
-            let bs = bs.utils#Backspace(ms[2])
+            let bs = bs.pairs#utils#Backspace(ms[2])
           end
         end
       endwhile
-      return bs.del.openPair.close.utils#Left(close)
+      return bs.del.openPair.close.pairs#utils#Left(close)
     end
   endfor
 
@@ -205,9 +205,9 @@ func! AutoPairsInsert(key)
       if m != ''
         if before =~ '\V'.open.'\v\s*$' && m[0] =~ '\v\s'
           " remove the space we inserted if the text in pairs is blank
-          return "\<DEL>".utils#Right(m[1:])
+          return "\<DEL>".pairs#utils#Right(m[1:])
         else
-          return utils#Right(m)
+          return pairs#utils#Right(m)
         end
       end
       let m = matchstr(after, '^\v\s*\zs\V'.close)
@@ -241,7 +241,7 @@ func! AutoPairsDelete()
     return "\<BS>"
   end
 
-  let [before, after, ig] = utils#GetLineContext()
+  let [before, after, ig] = pairs#utils#GetLineContext()
   for [open, close, opt] in b:AutoPairsList
     let b = matchstr(before, '\V'.open.'\v\s?$')
     let a = matchstr(after, '^\v\s*\V'.close)
@@ -253,7 +253,7 @@ func! AutoPairsDelete()
           return "\<BS>"
         end
       end
-      return utils#Backspace(b).utils#Delete(a)
+      return pairs#utils#Backspace(b).pairs#utils#Delete(a)
     end
   endfor
 
@@ -262,7 +262,7 @@ func! AutoPairsDelete()
   for [open, close, opt] in b:AutoPairsList
     let m = s:matchend(before, '\V'.open.'\v\s*'.'\V'.close.'\v$')
     if len(m) > 0
-      return utils#Backspace(m[2])
+      return pairs#utils#Backspace(m[2])
     end
   endfor
   return "\<BS>"
@@ -273,7 +273,7 @@ endf
 func! AutoPairsFastWrap()
   let c = @"
   normal! x
-  let [before, after, ig] = utils#GetLineContext()
+  let [before, after, ig] = pairs#utils#GetLineContext()
   if after[0] =~ '\v[\{\[\(\<]'
     normal! %
     normal! p
@@ -322,7 +322,7 @@ func! AutoPairsSpace()
     return "\<SPACE>"
   end
 
-  let [before, after, ig] = utils#GetLineContext()
+  let [before, after, ig] = pairs#utils#GetLineContext()
 
   for [open, close, opt] in b:AutoPairsList
     if close == ''
