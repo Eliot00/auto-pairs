@@ -102,16 +102,6 @@ if !exists('g:AutoPairsSmartQuotes')
   let g:AutoPairsSmartQuotes = 1
 endif
 
-" split text to two part
-" returns [orig, text_before_open, open]
-func! s:matchend(text, open)
-    let m = matchstr(a:text, '\V'.a:open.'\v$')
-    if m == ""
-      return []
-    end
-    return [a:text, strpart(a:text, 0, len(a:text)-len(m)), m]
-endf
-
 " add or delete pairs base on g:AutoPairs
 " AutoPairsDefine(addPairs:dict[, removeOpenPairList:list])
 "
@@ -147,7 +137,7 @@ func! AutoPairsInsert(key)
 
   " check open pairs
   for [open, close, opt] in b:AutoPairsList
-    let ms = s:matchend(before.a:key, open)
+    let ms = pairs#utils#MatchEnd(before.a:key, open)
     let m = matchstr(afterline, '^\v\s*\zs\V'.close)
     if len(ms) > 0
       " process the open pair
@@ -166,7 +156,7 @@ func! AutoPairsInsert(key)
         let found = 0
         " delete pair
         for [o, c, opt] in b:AutoPairsList
-          let os = s:matchend(before, o)
+          let os = pairs#utils#MatchEnd(before, o)
           if len(os) && len(os[1]) < len(target)
             " any text before openPair should not be deleted
             continue
@@ -183,7 +173,7 @@ func! AutoPairsInsert(key)
         endfor
         if !found
           " delete charactor
-          let ms = s:matchend(before, '\v.')
+          let ms = pairs#utils#MatchEnd(before, '\v.')
           if len(ms)
             let before = ms[1]
             let bs = bs.pairs#utils#Backspace(ms[2])
@@ -260,7 +250,7 @@ func! AutoPairsDelete()
   return "\<BS>"
   " delete the pair foo[]| <BS> to foo
   for [open, close, opt] in b:AutoPairsList
-    let m = s:matchend(before, '\V'.open.'\v\s*'.'\V'.close.'\v$')
+    let m = pairs#utils#MatchEnd(before, '\V'.open.'\v\s*'.'\V'.close.'\v$')
     if len(m) > 0
       return pairs#utils#Backspace(m[2])
     end

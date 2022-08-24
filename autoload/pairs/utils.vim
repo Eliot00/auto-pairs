@@ -50,6 +50,16 @@ export def MatchBegin(text: string, close: string): list<string>
   return [text, m, strpart(text, len(m), len(text) - len(m))]
 enddef
 
+# split text to two part
+# returns [orig, text_before_open, open]
+export def MatchEnd(text: string, open: string): list<string>
+  const m = matchstr(text, '\V' .. open .. '\v$')
+  if m == ""
+    return []
+  endif
+  return [text, strpart(text, 0, len(text) - len(m)), m]
+enddef
+
 def UnicodeLen(pair: string): number
   return len(split(pair, '\zs'))
 enddef
