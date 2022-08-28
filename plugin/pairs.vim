@@ -290,10 +290,6 @@ func! AutoPairsFastWrap()
   return ""
 endf
 
-func! AutoPairsJump()
-  call search('["\]'')}]','W')
-endf
-
 func! AutoPairsMoveCharacter(key)
   let c = getline(".")[col(".")-1]
   let escaped_key = substitute(a:key, "'", "''", 'g')
@@ -460,8 +456,8 @@ func! AutoPairsInit()
   end
 
   if g:AutoPairsShortcutJump != ''
-    execute 'inoremap <buffer> <silent> ' . g:AutoPairsShortcutJump. ' <ESC>:call AutoPairsJump()<CR>a'
-    execute 'noremap <buffer> <silent> ' . g:AutoPairsShortcutJump. ' :call AutoPairsJump()<CR>'
+    execute 'inoremap <buffer> <silent> ' . g:AutoPairsShortcutJump. ' <ESC>:call pairs#AutoPairsJump()<CR>a'
+    execute 'noremap <buffer> <silent> ' . g:AutoPairsShortcutJump. ' :call pairs#AutoPairsJump()<CR>'
   end
 
   if &keymap != ''
