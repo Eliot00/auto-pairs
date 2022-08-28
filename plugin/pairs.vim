@@ -73,10 +73,6 @@ if !exists('g:AutoPairsShortcutFastWrap')
   let g:AutoPairsShortcutFastWrap = '<M-e>'
 end
 
-if !exists('g:AutoPairsMoveCharacter')
-  let g:AutoPairsMoveCharacter = "()[]{}\"'"
-end
-
 if !exists('g:AutoPairsShortcutJump')
   let g:AutoPairsShortcutJump = '<M-n>'
 endif
@@ -290,12 +286,6 @@ func! AutoPairsFastWrap()
   return ""
 endf
 
-func! AutoPairsMoveCharacter(key)
-  let c = getline(".")[col(".")-1]
-  let escaped_key = substitute(a:key, "'", "''", 'g')
-  return "\<DEL>\<ESC>:call search("."'".escaped_key."'".")\<CR>a".c."\<LEFT>"
-endf
-
 func! AutoPairsBackInsert()
   let pair = b:autopairs_saved_pair[0]
   let pos  = b:autopairs_saved_pair[1]
@@ -364,10 +354,6 @@ func! AutoPairsInit()
     let b:AutoPairs = AutoPairsDefaultPairs()
   end
 
-  if !exists('b:AutoPairsMoveCharacter')
-    let b:AutoPairsMoveCharacter = g:AutoPairsMoveCharacter
-  end
-
   let b:autopairs_return_pos = 0
   let b:autopairs_saved_pair = [0, 0]
   let b:AutoPairsList = []
@@ -417,12 +403,6 @@ func! AutoPairsInit()
     if open == "'" && open == close
       let item[0] = '\v(^|\W)\zs'''
     end
-  endfor
-
-
-  for key in split(b:AutoPairsMoveCharacter, '\s*')
-    let escaped_key = substitute(key, "'", "''", 'g')
-    execute 'inoremap <silent> <buffer> <M-'.key."> <C-R>=AutoPairsMoveCharacter('".escaped_key."')<CR>"
   endfor
 
   " Still use <buffer> level mapping for <BS> <SPACE>
