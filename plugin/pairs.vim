@@ -8,6 +8,7 @@
 " License: MIT
 
 import autoload 'pairs/utils.vim'
+import autoload 'pairs.vim'
 
 if exists('g:AutoPairsLoaded') || &cp
   finish
@@ -17,28 +18,6 @@ let g:AutoPairsLoaded = 1
 if !exists('g:AutoPairs')
   let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', '"""':'"""', "'''":"'''", "`":"`"}
 end
-
-" default pairs base on filetype
-func! AutoPairsDefaultPairs()
-  if exists('b:autopairs_defaultpairs')
-    return b:autopairs_defaultpairs
-  end
-  let r = copy(g:AutoPairs)
-  let allPairs = {
-        \ 'vim': {'\v^\s*\zs"': ''},
-        \ 'rust': {'\w\zs<': '>', '&\zs''': ''},
-        \ 'php': {'<?': '?>//k]', '<?php': '?>//k]'}
-        \ }
-  for [filetype, pairs] in items(allPairs)
-    if &filetype == filetype
-      for [open, close] in items(pairs)
-        let r[open] = close
-      endfor
-    end
-  endfor
-  let b:autopairs_defaultpairs = r
-  return r
-endf
 
 if !exists('g:AutoPairsMapBS')
   let g:AutoPairsMapBS = 1
@@ -105,7 +84,7 @@ endif
 "   au FileType html let b:AutoPairs = AutoPairsDefine({'<!--' : '-->'}, ['{'])
 "   add <!-- --> pair and remove '{' for html file
 func! AutoPairsDefine(pairs, ...)
-  let r = AutoPairsDefaultPairs()
+  let r = pairs#AutoPairsDefaultPairs()
   if a:0 > 0
     for open in a:1
       unlet r[open]
@@ -351,7 +330,7 @@ func! AutoPairsInit()
   end
 
   if !exists('b:AutoPairs')
-    let b:AutoPairs = AutoPairsDefaultPairs()
+    let b:AutoPairs = pairs#AutoPairsDefaultPairs()
   end
 
   let b:autopairs_return_pos = 0
